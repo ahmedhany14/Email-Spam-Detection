@@ -42,5 +42,5 @@ The dataset used in this project from Kaggle, to download it use this [link](htt
 ## Deplyment and run the application
 
 #### open Terminal in VS code, and write following commands
-        cd "deployment with streamlit"
+        cd "App"
         streamlit run app.py
