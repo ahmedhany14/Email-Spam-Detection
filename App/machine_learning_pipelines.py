@@ -41,3 +41,56 @@ from sklearn.metrics import accuracy_score, confusion_matrix
 
 # for votting system model
 from sklearn.ensemble import VotingClassifier
+
+
+
+td = TfidfVectorizer(max_features=3000)
+count_vec = CountVectorizer(max_features=3000)
+
+svm = Pipeline(
+    steps=[
+        ("TfidfVectorizer", td),
+        ("SVC", SVC(kernel="sigmoid", gamma=1, C=0.5, probability=True)),
+    ]
+)
+
+mnb = Pipeline(
+    steps=[("CountVectorizer", count_vec), ("MultinomialNB", MultinomialNB())]
+)
+
+DCT = Pipeline(
+    steps=[
+        ("TfidfVectorizer", td),
+        (
+            "DecisionTreeClassifier",
+            AdaBoostClassifier(
+                estimator=DecisionTreeClassifier(),
+                n_estimators=50,
+                random_state=42,
+                algorithm="SAMME",
+            ),
+        ),
+    ]
+)
+
+xgbc = Pipeline(
+    steps=[
+        ("TfidfVectorizer", td),
+        ("XGBClassifier", XGBClassifier(n_estimators=50, random_state=42)),
+    ]
+)
+
+
+
+def model(x_train, y_train):
+    votting_system = VotingClassifier(
+        estimators=[
+            ("SVM", svm),
+            ("DTC", DCT),
+            ("xgbc", xgbc),
+            ("mnb", mnb),
+        ],
+        voting="soft",
+    )
+    votting_system.fit(x_train, y_train)
+    return votting_system
